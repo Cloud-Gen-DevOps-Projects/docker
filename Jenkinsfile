@@ -26,8 +26,8 @@ pipeline {
          }
          stage("push Image: DOCKERHUB"){
              steps{
-                 withCredentials([string(credentialsId: 'docker_pwd', variable: 'docker_passwd')]) {
-                 sh "docker login -u thanish -p ${docker_passwd}"
+                withCredentials([string(credentialsId: 'DockerPassword', variable: 'DockerPassword')]) {
+                sh "docker login -u thanish -p ${DockerPassword}"
                 sh 'docker image push thanish/$JOB_NAME:v1.$BUILD_ID'
                 sh 'docker image push thanish/$JOB_NAME:latest'
                //A number of images will get stored into our jenkins server so need to remove prev build images
@@ -42,7 +42,7 @@ pipeline {
         //def docker_rmv_container = 'docker run -p 9000:80 -d --name scripted-pipeline-demo thanish/scripted-pipeline-demo:latest'
         //def docker_rmi = 'docker rmi -f thanish/scripted-pipeline-demo'
         // container deployment need to be done on remote host server DOCKER-Host so ssh-Agent plugin required in jenkins
-       sshagent(['docker_passwd']) {
+       sshagent(['DockerPassword']) {
     sh "ssh -o StrictHostKeyChecking=no root@192.168.254.128 docker rm -f scripted-pipeline-demo"
     sh "ssh -o StrictHostKeyChecking=no root@192.168.254.128 docker rmi -f thanish/scripted-pipeline-demo"
     sh "ssh -o StrictHostKeyChecking=no root@192.168.254.128 docker run -p 9000:80 -d --name scripted-pipeline-demo thanish/scripted-pipeline-demo:latest"
@@ -72,3 +72,4 @@ pipeline {
         } */
     }
 }
+
